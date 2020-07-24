@@ -10,13 +10,11 @@ const bcrypt = require("bcryptjs")
 
 const schema = Joi.object().keys({
   username: Joi.string()
-    .regex(/(^[a-zA-Z0-9_])*$/)
+    .regex(/(^[a-zA-Z0-9_]+$)/)
     .min(3)
     .max(30)
     .required(),
-  password: Joi.string().trim().min(8).required(),
-  developer: Joi.boolean(),
-  admin: Joi.boolean(),
+  password: Joi.string().trim().min(8).required()
 })
 
 router.get("/", (req, res,) => {
@@ -26,6 +24,7 @@ router.get("/", (req, res,) => {
 router.post("/signup", (req, res, next) => {
   console.log("body", req.body)
   const result = Joi.validate(req.body, schema)
+  console.log(result.error)
   if(result.error === null){
     // username is unique
     User.findOne({
@@ -34,6 +33,7 @@ router.post("/signup", (req, res, next) => {
       if (user) {
         // if there is a user return a error
         const error = new Error("That username is already in use")
+        res.status(409)
         next(error)
       } else {
           let username = req.body.username
@@ -64,6 +64,7 @@ router.post("/signup", (req, res, next) => {
       }
     }).catch(err => console.log(err))
   } else {
+    res.status(422)
     next(result.error)
   }
 })

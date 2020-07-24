@@ -6,6 +6,9 @@ const app = express()
 // const auth = require("./auth/index.js")
 const auth = require("./auth")
 
+const cors = require("cors")
+
+
 require("dotenv").config()
 require("./db/connection")
 
@@ -17,6 +20,12 @@ app.get("/", (req, res) => {
     "message": "🦄🌈✨  Hello World!   🌈✨🦄",
   })
 })
+
+app.use(
+  cors({
+    origin: "http://localhost:8080",
+  }),
+)
 
 app.use( "/auth", auth)
 
